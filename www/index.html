@@ -3,56 +3,294 @@
 <html>
 <head>
 <meta charset="utf-8" />
-<title>Mobile Tests</title>
-
-<!-- for CreateJS and ZIMjs http://zimjs.com - free to modify - Dan Zen 2015 -->
-<!-- see http://zimjs.com/templates for more templates and meta tags -->
-
-<script type="text/javascript" src="cordova.js"></script>
-
-<script>var zon = true; // true for comments from zim code</script>
-<script src="js/zim_2.4.js"></script><!-- add _doc to see code -->
-<script src="js/createjs-2015.11.26.min.js"></script>
-<!-- or can go to zimjs.com and createjs.com for individual modules -->
+<title>Lovely Birds Game</title>
+<meta name='viewport' content='width=device-width, initial-scale=1.0'>
 
 <style>
-	body {margin:0px; padding:0px; background-color:#000;}
-	#myCanvas {position:absolute; background-color:#ccc;}
+	body {margin:0px; padding:0px; background-color:#000; overflow:hidden;}
+	#myCanvas {position:absolute; left:0px; top:0px; background-color:#fff1cb;}
 </style>
+
+<script src="libraries/createjs-2015.11.26.min.js"></script>
+<script type="text/javascript" src="libraries/zim_1.4.4.js"></script>
 
 <script>
 
-// SCALING OPTIONS
-// "none"		sets canvas and stage to dimensions and does not scale if window changes
-// "fit"		sets canvas and stage to dimensions and scales to fit inside window size
-// "outside"	sets canvas and stage to dimensions and scales to fit outside window size
-// "full"		sets canvas and stage to window size (canvas is actually set to screen size)
+window.addEventListener('load', app); // make sure we have access to the body tag
 
-var scaling = "fit"; // fit scales to fit the browser window while keeping the aspect ratio
-var width = 640;
-var height = 960;
-var frame = new zim.Frame(scaling, width, height);
-frame.on("ready", function() {
-	zog("ready from ZIM Frame");
+//var resize;
+    
+function app() {
+	var ready = false;
+	makeCanvas();
+	var stage = new createjs.Stage("myCanvas");
+	var stageW, stageH;
+    
+    var blue_for_pink;
+    var pink_bird;
+    var blue_for_yellow;
+    var yellow_bird;
+    var pink_love;
+    var yellow_love;
+    var wrong;
+    
+	sizeStage();
+	stage.enableMouseOver(10);
+	createjs.Touch.enable(stage, true);
+//    sizeStage();
+//    stage.mouseMoveOutside = true; 
+    
+    var manifest = [{id:"tree", src:"assets/tree.png"},
+                    {id:"grass", src:"assets/grass.png"},
+                    {id:"yellow_bird", src:"assets/yellow_bird.png"},
+                    {id:"pink_bird", src:"assets/pink_bird.png"},
+                    {id:"blue_for_pink", src:"assets/blue_for_pink.png"},
+                    {id:"blue_for_yellow", src:"assets/blue_for_yellow.png"},
+                    {id:"yellow_love", src:"assets/yellow_love.png"},
+                    {id:"pink_love", src:"assets/pink_love.png"},
+                    {id:"wrong", src:"assets/wrong.png"},
+                    {id:"wrong2", src:"assets/wrong.png"},
+                   ];
+	var preload = new createjs.LoadQueue(false);
+	preload.on("complete", app);
+	preload.loadManifest(manifest);
+    
+    
 
-	var stage = frame.stage;
-	var stageW = frame.width;
-	var stageH = frame.height;
+    function app() {
+                
+        init();
+        function init () {
 
-	// put your code here (you can delete this code)
+            var tree = new createjs.Bitmap( preload.getResult("tree") );
+            stage.addChild(tree);
+            tree.scaleX=0.14;
+            tree.scaleY=0.14;
+            tree.x=10;
 
-  var c= new zim.Circle(100, "#ea6a91");
-  stage.addChild(c);
-  zim.centerReg(c,stage);
+            var grass = new createjs.Bitmap( preload.getResult("grass") );
+            stage.addChild(grass);
+            grass.scaleX=0.16;
+            grass.scaleY=0.16;
+            grass.x=0;
+            grass.y=350;
 
-  zim.drag(c);
-	stage.update();
+            yellow_bird = new createjs.Bitmap( preload.getResult("yellow_bird") );
+            stage.addChild(yellow_bird);
+            yellow_bird.scaleX=0.14;
+            yellow_bird.scaleY=0.14;
+            yellow_bird.x=55;
+            yellow_bird.y=143;
+            
+            pink_bird = new createjs.Bitmap( preload.getResult("pink_bird") );
+            stage.addChild(pink_bird);
+//            pink_bird.alpha = 0.2; 
+            pink_bird.scaleX=0.14;
+            pink_bird.scaleY=0.14;
+            pink_bird.x=200;
+            pink_bird.y=265;
+            
+            yellow_love = new createjs.Bitmap( preload.getResult("yellow_love") );
+//            stage.addChild(yellow_love);
+            yellow_love.scaleX=0.14;
+            yellow_love.scaleY=0.14;
+            yellow_love.x=11;
+            yellow_love.y=55;
+            
+            pink_love = new createjs.Bitmap( preload.getResult("pink_love") );
+//            stage.addChild(pink_love);
+            pink_love.scaleX=0.14;
+            pink_love.scaleY=0.14;
+            pink_love.x=135;
+            pink_love.y=155;
+            
+            blue_for_pink = new createjs.Bitmap( preload.getResult("blue_for_pink") );
+            stage.addChild(blue_for_pink);
+            blue_for_pink.scaleX=0.14;
+            blue_for_pink.scaleY=0.14;
+            blue_for_pink.x=20;
+            blue_for_pink.y=350;
+            blue_for_pink.cursor = "pointer";
+            
+            blue_for_yellow = new createjs.Bitmap( preload.getResult("blue_for_yellow") );
+            stage.addChild(blue_for_yellow);
+            blue_for_yellow.scaleX=0.14;
+            blue_for_yellow.scaleY=0.14;
+            blue_for_yellow.x=200;
+            blue_for_yellow.y=360;
+            blue_for_yellow.cursor = "pointer";
+            
+            
+            wrong = new createjs.Bitmap( preload.getResult("wrong") );
+            wrong.scaleX=0.14;
+            wrong.scaleY=0.14;
+            wrong.x=-27;
+            wrong.y=-25;
+            wrong.cursor = "pointer";
+            
+            wrong2 = new createjs.Bitmap( preload.getResult("wrong2") );
+            wrong2.scaleX=0.14;
+            wrong2.scaleY=0.14;
+            wrong2.x=-27;
+            wrong2.y=-25;
+            wrong2.cursor = "pointer";
+            
 
-}); // end of ready
+            blue_for_pink.on("pressmove",function(evt) {
+                // currentTarget will be the container that the event listener was added to:
+                evt.currentTarget.x = evt.stageX;
+                evt.currentTarget.y = evt.stageY;
+                // make sure to redraw the stage to show the change:
+                stage.update();   
+            });
+            blue_for_pink.on("pressup", function(evt) {
+                console.log("up"); 
+            });
+            createjs.Ticker.on("tick", tick_two);
+
+
+            blue_for_yellow.on("pressmove",function(evt) {
+                // currentTarget will be the container that the event listener was added to:
+                evt.currentTarget.x = evt.stageX;
+                evt.currentTarget.y = evt.stageY;
+                // make sure to redraw the stage to show the change:
+                stage.update();   
+            });
+            blue_for_yellow.on("pressup", function(evt) {
+                console.log("up"); 
+            });
+            createjs.Ticker.on("tick", tick);
+
+        }
+        
+        /// Check if boy-bird matches yellow-girl-bird ///
+        function tick (event) {
+            var pt = blue_for_pink.localToLocal(260,335,pink_bird);
+            var pt_two = blue_for_pink.localToLocal(55,143,yellow_bird);
+            if (pink_bird.hitTest(pt.x, pt.y)) {
+//                        pink_bird.alpha = 1; 
+                stage.removeChild(pink_bird, blue_for_pink);
+                stage.addChild(pink_love);
+            } else if (yellow_bird.hitTest(pt_two.x, pt_two.y)) {
+                createjs.Tween.get(blue_for_pink).wait(300).to({y: 350}, 1000, createjs.Ease.cubicInOut);
+                var listener = createjs.Ticker.on("tick", stage);
+                stage.addChild(wrong);
+            }
+
+            stage.update(event);
+        };
+        
+        /// Removes Wrong Message ///
+        wrong.on("click", function(e) {
+            stage.removeChild(wrong);
+            stage.update(e);
+        });
+        
+        /// Check if boy-bird matches pink-girl-bird ///
+        function tick_two (event) {
+            var pt = blue_for_yellow.localToLocal(55,143,yellow_bird);
+            var pt_two = blue_for_yellow.localToLocal(260,335,pink_bird);
+            if (yellow_bird.hitTest(pt.x, pt.y)) {
+//                        pink_bird.alpha = 1; 
+                stage.removeChild(yellow_bird, blue_for_yellow);
+                stage.addChild(yellow_love);
+            } else if (pink_bird.hitTest(pt_two.x, pt_two.y)) {
+                createjs.Tween.get(blue_for_yellow).wait(300).to({y: 360}, 1000, createjs.Ease.cubicInOut);
+                var listener = createjs.Ticker.on("tick", stage);
+                stage.addChild(wrong2);
+            }
+
+            stage.update(event);
+        };
+        
+        /// Removes Wrong2 Message ///
+        wrong2.on("click", function(e) {
+            stage.removeChild(wrong2);
+            stage.update(e);
+        });
+
+    }
+
+
+	
+                
+    function resize() {		
+        // here is where we put code to resize
+
+        stage.update();
+        
+    }
+
+
+    stage.update();
+
+    // template code below
+
+    ready = true; // all your code is made by now
+
+	function sizeStage() {
+		// earlier than IE9 does not have innerWidth
+		// inner is better on mobile when zoomed so can't always use client
+		stageW = isNaN(window.innerWidth) ? window.clientWidth : window.innerWidth;
+		stageH = isNaN(window.innerHeight) ? window.clientHeight : window.innerHeight;
+		stage.setBounds(0,0,stageW,stageH);
+		if (ready)	resize();
+	}
+
+	function makeCanvas() {
+		// note the width and height of a canvas
+		// are separate from from the width and height styles
+		// so beware of unintentionally stretching the canvas with styles
+
+		// make a canvas tag and apply attributes for id, width and height
+		var canvas = document.createElement("canvas");
+		canvas.setAttribute("id", "myCanvas");
+
+		// get maximum size for canvas
+		// note: iOS6 does not work from loading icon unless keep canvas within device size
+		// thank you apple for this and many other days of hell
+		largest = Math.max(window.innerWidth, screen.width, window.innerHeight, screen.height);
+		if (!/ip(hone|od|ad)/i.test(navigator.userAgent)) largest *= 3; // handle up to three monitors
+
+		// just set the canvas to the largest size to avoid worrying about rotating device
+		canvas.setAttribute("width", largest);
+		canvas.setAttribute("height", largest);
+
+		// add our canvas tag
+		document.body.appendChild(canvas);
+
+		// stop the canvas from moving when certain keys are pressed (pgdwn, pgup, arrows, home, end)
+		// and stop scrollwheel from moving page
+		var a = function(e) {
+			if (!e) e = event;
+			if (e.keyCode && (e.keyCode >= 32 && e.keyCode <= 40)) e.preventDefault();
+		}
+		var b = function(e) {
+			if (!e) e = event;
+			e.preventDefault();
+		}
+		var c = b;
+		window.addEventListener("keydown", a);
+		window.addEventListener("mousewheel", b);
+		window.addEventListener("DOMMouseScroll", c);
+
+
+	}
+
+	window.addEventListener('resize', function() {
+		sizeStage();
+		if (/android|nexus/i.test(navigator.userAgent)) setTimeout(function() {sizeStage();}, 500); // to catch delayed screen sizes
+	});
+
+}
+
 </script>
-</head>
 
+
+    
+</head>
 <body>
-<!-- canvas with id="myCanvas" is made by zim Frame -->
+
+
 </body>
 </html>
